@@ -1,4 +1,3 @@
-// config/mailer.js
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
@@ -6,17 +5,17 @@ const isProduction = process.env.NODE_ENV === "production";
 
 let transporter;
 
-// 🟢 Use Gmail App Password on Render (production)
 if (isProduction) {
+  // 🟢 Production - Gmail (Aekads)
   transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.SMTP_USER, // your Gmail address
-      pass: process.env.SMTP_PASS, // your Gmail app password
+      user: "kartikchaudhari639@gmail.com",
+      pass: "blhaizioolxakizz", // Gmail app password
     },
   });
 } else {
-  // 🟢 Localhost settings (same as your working config)
+  // 🟢 Localhost - .env settings
   transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: parseInt(process.env.SMTP_PORT) || 587,
