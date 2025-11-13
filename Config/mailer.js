@@ -11,7 +11,7 @@ if (isProduction) {
     service: "gmail",
     auth: {
       user: "kartikchaudhari639@gmail.com",
-      pass: "blhaizioolxakizz", // Gmail app password
+      pass: "lxkq loev tngu vpko", // Gmail app password
     },
   });
 } else {

@@ -19,5 +19,8 @@
     "joi": "^18.0.1",
     "nodemailer": "^7.0.10",
     "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@express-rate-limit/tsconfig": "^1.0.2"
   }
 }
