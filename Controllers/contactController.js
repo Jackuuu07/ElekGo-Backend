@@ -5,17 +5,17 @@ const db = require("../Config/db");
 
 exports.addContact = async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, message } = req.body;
+    const { name, email, message } = req.body;
 
-    if (!firstName || !email) {
-      return res.status(400).json({ error: "First name and email are required." });
+    if (!name || !email) {
+      return res.status(400).json({ error: "Name and email are required." });
     }
 
     // 🟢 1️⃣ Save to PostgreSQL (common for both environments)
     await db.query(
-      `INSERT INTO contact_messages (first_name, last_name, email, phone, message)
-       VALUES ($1, $2, $3, $4, $5)`,
-      [firstName, lastName, email, phone, message]
+      `INSERT INTO  contacts (name, email, message)
+       VALUES ($1, $2, $3)`,
+      [name, email, message]
     );
 
     // 🟢 2️⃣ Email settings differ based on environment
@@ -26,9 +26,7 @@ exports.addContact = async (req, res) => {
       // === Production on Render ===
       mailOptions = {
         from: email,
-        to: [
-          "kartikc1348@gmail.com",
-        ],
+        to: ["kartikc1348@gmail.com"], // Receiver for production
         subject: "🔔 New Lead Alert: Contact Form Submission",
         html: `
           <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; color: #333;">
@@ -37,9 +35,8 @@ exports.addContact = async (req, res) => {
                   <p style="font-size: 16px;">You have received a new inquiry from your contact form.</p>
                   <hr style="border: 1px solid #ddd;">
                   <h3 style="color: #333;">👤 Contact Details:</h3>
-                  <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+                  <p><strong>Name:</strong> ${name}</p>
                   <p><strong>Email:</strong> <a href="mailto:${email}" style="color: #0073e6;">${email}</a></p>
-                  <p><strong>Phone:</strong> <a href="tel:${phone}" style="color: #0073e6;">${phone}</a></p>
                   <hr style="border: 1px solid #ddd;">
                   <h3 style="color: #333;">💬 Message:</h3>
                   <p style="font-style: italic; background-color: #f9f9f9; padding: 10px; border-radius: 5px;">${message}</p>
@@ -52,18 +49,14 @@ exports.addContact = async (req, res) => {
         `,
       };
     } else {
-      
-      
       // === Local Development ===
-      
-      
       mailOptions = {
         from: `"Contact Form" <${process.env.SMTP_USER}>`,
         to: process.env.ADMIN_EMAIL,
-        subject: `📨 New Contact Submission from ${firstName}`,
+        subject: `📨 New Contact Submission from ${name}`,
         html: `
           <h2>New Contact Form Submission</h2>
-          <p><b>Name:</b> ${firstName} ${lastName}</p>
+          <p><b>Name:</b> ${name}</p>
           <p><b>Email:</b> ${email}</p>
           <p><b>Message:</b><br>${message}</p>
           <hr/>
@@ -72,7 +65,7 @@ exports.addContact = async (req, res) => {
       };
     }
 
-    // 3️⃣ Send email
+    // 🟢 3️⃣ Send email
     await transporter.sendMail(mailOptions);
 
     res.status(200).json({ success: true, message: "Message sent and saved successfully!" });
