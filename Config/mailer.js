@@ -4,19 +4,30 @@ require("dotenv").config();
 
 const isProduction = process.env.NODE_ENV === "production";
 
-// Configure transporter for local vs production
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: isProduction ? 465 : parseInt(process.env.SMTP_PORT) || 587, // 465 for Render
-  secure: isProduction ? true : false, // true for port 465 (SSL), false for 587 (STARTTLS)
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS, // app password for Gmail
-  },
-  tls: {
-    rejectUnauthorized: false, // required on some cloud servers
-  },
-});
+let transporter;
+
+// 🟢 Use Gmail App Password on Render (production)
+if (isProduction) {
+  transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.SMTP_USER, // your Gmail address
+      pass: process.env.SMTP_PASS, // your Gmail app password
+    },
+  });
+} else {
+  // 🟢 Localhost settings (same as your working config)
+  transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT) || 587,
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+    tls: { rejectUnauthorized: false },
+  });
+}
 
 // Verify connection
 transporter.verify((error, success) => {
