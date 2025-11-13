@@ -51,12 +51,14 @@ app.post("/api/contact/test", async (req, res) => {
   try {
     // Create transporter (using your credentials directly)
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp-relay.brevo.com",
+      port: 587,
       auth: {
-        user: "kartikchaudhari639@gmail.com",
-        pass: "lxkq loev tngu vpko",
+        user: "anything@example.com",
+        pass: process.env.BREVO_SMTP_KEY, // from Render env var
       },
     });
+
 
     // Define mail details
     const mailOptions = {
